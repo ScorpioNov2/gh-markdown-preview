@@ -1,28 +1,29 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
-name: Go
+name: Build Windows Exe
 
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  workflow_dispatch: # Cho phép bạn bấm nút "Run" thủ công
 
 jobs:
-
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest # Build trên môi trường Windows
     steps:
     - uses: actions/checkout@v4
 
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.20'
+        go-version: '1.21'
 
     - name: Build
-      run: go build -v ./...
+      run: |
+        go mod tidy
+        go build -o gh-preview.exe
 
-    - name: Test
-      run: go test -v ./...
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: gh-markdown-preview-windows
+        path: gh-preview.exe
+
